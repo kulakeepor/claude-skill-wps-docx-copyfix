@@ -39,7 +39,7 @@ WPS 打开原文档没事，是因为 WPS 重新结算浮动坐标；粘贴时**
 | 脚本 | 用途 |
 |---|---|
 | `scripts/diagnose.py` | 体检报告：浮动图明细/空分节符段/缩进分布/空段runs + 全段落 dump；`--pdf 原版.pdf` 附提取阅读顺序 |
-| `scripts/auto_fix.py` | 机械修复四件套（幂等）：anchor→inline、删空分节符段、去 w:ind、折叠空段；`--center-title` 标题居中；`--a4-2cm`/`--margins` 可选页面设置 |
+| `scripts/auto_fix.py` | 机械修复四件套（幂等）：anchor→inline、删空分节符段、去 w:ind、折叠空段；`--center-title` 标题居中；`--a4-2cm`/`--margins` 页面设置 |
 | `scripts/verify.py` | 五道验收关卡：XML良构/图片数/正文零丢失(忽略空白字符级diff)/zip回读/可选渲染页数 |
 | `scripts/docx_lib.py` | 工具库：解包重组、段落与 run 级操作原语（内容手术用） |
 
@@ -61,8 +61,12 @@ python3 scripts/diagnose.py 输入.docx --pdf 原版.pdf -o /tmp/wpsfix_x/diag
 
 ### Phase 2 — 机械修复（安全通用，直接跑）
 ```bash
-python3 scripts/auto_fix.py 输入.docx -o 整理版.docx --center-title   # 页面设置按用户要求加 --a4-2cm
+python3 scripts/auto_fix.py 输入.docx -o 整理版.docx --center-title --a4-2cm
 ```
+**页面设置必须默认带**（`--a4-2cm` 或 `--margins` 等效 A4+四边2.2cm）：
+WPS 原始版式是零边距复刻 PDF，不重设的话整个文档顶到纸边，用户必然要回调。
+用户历史标准：A4，四边 1247 twips（2.2cm），页眉页脚 720。
+
 顺序内置于脚本：anchor→inline → 删空分节符段 → 去缩进 → 折叠空段。
 **注意**：删分节符后页数可能不变（内容自然撑满）也可能变少，都要向用户说明这是解锁分页的正常结果。
 
